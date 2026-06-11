@@ -37,6 +37,8 @@ import {
   PASS_CRITERIA_DESCRIPTION,
 } from "@/constants/test-suites";
 
+export type CreateDatasetMode = "upload" | "sdk";
+
 enum Step {
   NAME_DESCRIPTION,
   UPLOAD_AND_CONFIG,
@@ -58,6 +60,7 @@ const TYPE_CONFIG = {
 
 type CreateDatasetSidebarProps = {
   type: DatasetListType;
+  mode: CreateDatasetMode;
   open: boolean;
   setOpen: (open: boolean) => void;
   onDatasetCreated?: (dataset: Dataset) => void;
@@ -65,7 +68,7 @@ type CreateDatasetSidebarProps = {
 
 const CreateDatasetSidebar: React.FunctionComponent<
   CreateDatasetSidebarProps
-> = ({ type, open, setOpen, onDatasetCreated }) => {
+> = ({ type, mode, open, setOpen, onDatasetCreated }) => {
   const config = TYPE_CONFIG[type];
   const entityLabel =
     config.entityName[0].toLowerCase() + config.entityName.slice(1);
@@ -234,57 +237,62 @@ const CreateDatasetSidebar: React.FunctionComponent<
       <div className="mb-4">
         <h3 className="comet-body-s-accented">{`Add ${dataKindPrefix}data`}</h3>
         <p className="comet-body-xs text-light-slate">
-          {`Choose how to provide your ${dataKindPrefix}data`}
+          {mode === "upload"
+            ? `Upload a CSV or JSON file with your ${dataKindPrefix}data`
+            : `Use the SDK to add your ${dataKindPrefix}data in code`}
         </p>
       </div>
-      <div className="mb-4">
-        <Label className="mb-2 block">Upload CSV or JSON</Label>
-        <DatasetUploadDescription
-          fileSizeLimit={fileSizeLimit}
-          docsUrl={buildDocsUrl("/evaluation/advanced/manage_datasets")}
-          className="mb-2 tracking-normal"
-        />
-        <DatasetUploadField
-          uploadFile={uploadFile}
-          uploadFormat={uploadFormat}
-          uploadError={uploadError}
-          onFileSelect={handleFileSelect}
-        />
-      </div>
-      <div className="mb-4">
-        <div className="mb-2">
-          <Label>Use SDK</Label>
+      {mode === "upload" ? (
+        <div className="mb-4">
+          <Label className="mb-2 block">Upload CSV or JSON</Label>
+          <DatasetUploadDescription
+            fileSizeLimit={fileSizeLimit}
+            docsUrl={buildDocsUrl("/evaluation/advanced/manage_datasets")}
+            className="mb-2 tracking-normal"
+          />
+          <DatasetUploadField
+            uploadFile={uploadFile}
+            uploadFormat={uploadFormat}
+            uploadError={uploadError}
+            onFileSelect={handleFileSelect}
+          />
         </div>
-        <Tabs
-          value={sdkLanguage}
-          onValueChange={(v) => setSdkLanguage(v as "python" | "typescript")}
-        >
-          <TabsList variant="underline" className="mb-0 gap-4">
-            <TabsTrigger variant="underline" size="sm" value="python">
-              Python
-            </TabsTrigger>
-            <TabsTrigger variant="underline" size="sm" value="typescript">
-              TypeScript
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="python" className="mt-0">
-            <div className="overflow-hidden rounded-b-md border border-t-0 border-border">
-              <CodeHighlighter
-                data={pythonSnippet}
-                language={SUPPORTED_LANGUAGE.python}
-              />
-            </div>
-          </TabsContent>
-          <TabsContent value="typescript" className="mt-0">
-            <div className="overflow-hidden rounded-b-md border border-t-0 border-border">
-              <CodeHighlighter
-                data={typescriptSnippet}
-                language={SUPPORTED_LANGUAGE.python}
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+      ) : (
+        <div className="mb-4">
+          <div className="mb-2">
+            <Label>Use SDK</Label>
+          </div>
+          <Tabs
+            value={sdkLanguage}
+            onValueChange={(v) => setSdkLanguage(v as "python" | "typescript")}
+          >
+            <TabsList variant="underline" className="mb-0 gap-4">
+              <TabsTrigger variant="underline" size="sm" value="python">
+                Python
+              </TabsTrigger>
+              <TabsTrigger variant="underline" size="sm" value="typescript">
+                TypeScript
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="python" className="mt-0">
+              <div className="overflow-hidden rounded-b-md border border-t-0 border-border">
+                <CodeHighlighter
+                  data={pythonSnippet}
+                  language={SUPPORTED_LANGUAGE.python}
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="typescript" className="mt-0">
+              <div className="overflow-hidden rounded-b-md border border-t-0 border-border">
+                <CodeHighlighter
+                  data={typescriptSnippet}
+                  language={SUPPORTED_LANGUAGE.python}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
       {type === "test_suite" && (
         <Accordion type="single" collapsible>
           <AccordionItem value="advanced" className="border-b-0">

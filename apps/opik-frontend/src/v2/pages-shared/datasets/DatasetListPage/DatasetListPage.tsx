@@ -17,11 +17,19 @@ import useProjectDatasetsList from "@/api/datasets/useProjectDatasetsList";
 import { Dataset, DATASET_TYPE, DatasetListType } from "@/types/datasets";
 import AddEditDatasetDialog from "@/v2/pages-shared/datasets/AddEditDatasetDialog/AddEditDatasetDialog";
 import AddEditTestSuiteDialog from "@/v2/pages-shared/datasets/AddEditTestSuiteDialog/AddEditTestSuiteDialog";
-import CreateDatasetSidebar from "@/v2/pages-shared/datasets/CreateDatasetSidebar/CreateDatasetSidebar";
+import CreateDatasetSidebar, {
+  CreateDatasetMode,
+} from "@/v2/pages-shared/datasets/CreateDatasetSidebar/CreateDatasetSidebar";
 import DatasetActionsPanel from "@/v2/pages-shared/datasets/DatasetActionsPanel/DatasetActionsPanel";
 import { createDatasetRowActionsCell } from "@/v2/pages-shared/datasets/DatasetRowActionsCell/DatasetRowActionsCell";
-import { Plus } from "lucide-react";
+import { Code2, FileText, Plus } from "lucide-react";
 import { Button } from "@/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/ui/dropdown-menu";
 import { Separator } from "@/ui/separator";
 import useAppStore, { useActiveProjectId } from "@/store/AppStore";
 import SearchInput from "@/shared/SearchInput/SearchInput";
@@ -61,6 +69,8 @@ const TYPE_CONFIG = {
     docsUrl: "/evaluation/advanced/manage_datasets",
     entityName: "datasets",
     createButtonText: "Create dataset",
+    uploadOptionDescription: "Quickly bulk-import up to 1,000 items",
+    sdkOptionDescription: "Automate and version-control your dataset in code",
     noDataText: "There are no datasets yet",
     emptyStateTitle: "No datasets yet",
     emptyStateDescription:
@@ -88,6 +98,9 @@ const TYPE_CONFIG = {
     docsUrl: "/evaluation/advanced/manage_datasets",
     entityName: "test suites",
     createButtonText: "Create test suite",
+    uploadOptionDescription: "Quickly bulk-import up to 1,000 test cases",
+    sdkOptionDescription:
+      "Automate and version-control your test suite in code",
     noDataText: "There are no test suites yet",
     emptyStateTitle: "No test suites yet",
     emptyStateDescription:
@@ -243,6 +256,7 @@ const DatasetListPage: React.FunctionComponent<DatasetListPageProps> = ({
   } = usePermissions();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [createMode, setCreateMode] = useState<CreateDatasetMode>("upload");
 
   const [search = "", setSearch] = useQueryParam("search", StringParam, {
     updateType: "replaceIn",
@@ -393,9 +407,13 @@ const DatasetListPage: React.FunctionComponent<DatasetListPageProps> = ({
     [columnsWidth, setColumnsWidth],
   );
 
-  const handleCreateClick = useCallback(() => {
-    setOpenDialog(true);
-  }, []);
+  const handleCreateClick = useCallback(
+    (mode: CreateDatasetMode = "upload") => {
+      setCreateMode(mode);
+      setOpenDialog(true);
+    },
+    [],
+  );
 
   const handleRowClick = useCallback(
     (row: Dataset) => {
@@ -426,10 +444,40 @@ const DatasetListPage: React.FunctionComponent<DatasetListPageProps> = ({
           {config.title}
         </h1>
         {canCreateDatasets && (
-          <Button variant="default" size="xs" onClick={handleCreateClick}>
-            <Plus className="mr-1 size-4" />
-            {config.createButtonText}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="default" size="xs">
+                <Plus className="mr-1 size-4" />
+                {config.createButtonText}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-72">
+              <DropdownMenuItem
+                className="items-start gap-2.5 py-2.5"
+                onSelect={() => handleCreateClick("upload")}
+              >
+                <FileText className="mt-0.5 size-4 shrink-0 text-light-slate" />
+                <div className="flex flex-col gap-0.5">
+                  <span className="comet-body-s-accented">Upload CSV</span>
+                  <span className="comet-body-xs text-light-slate">
+                    {config.uploadOptionDescription}
+                  </span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="items-start gap-2.5 py-2.5"
+                onSelect={() => handleCreateClick("sdk")}
+              >
+                <Code2 className="mt-0.5 size-4 shrink-0 text-light-slate" />
+                <div className="flex flex-col gap-0.5">
+                  <span className="comet-body-s-accented">Use SDK</span>
+                  <span className="comet-body-xs text-light-slate">
+                    {config.sdkOptionDescription}
+                  </span>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
       {isEmpty ? (
@@ -441,7 +489,9 @@ const DatasetListPage: React.FunctionComponent<DatasetListPageProps> = ({
           primaryActionLabel={
             canCreateDatasets ? config.emptyStatePrimaryActionLabel : undefined
           }
-          onPrimaryAction={canCreateDatasets ? handleCreateClick : undefined}
+          onPrimaryAction={
+            canCreateDatasets ? () => handleCreateClick("upload") : undefined
+          }
           docsUrl={buildDocsUrl(config.docsUrl)}
         />
       ) : (
@@ -496,7 +546,10 @@ const DatasetListPage: React.FunctionComponent<DatasetListPageProps> = ({
             noData={
               <DataTableNoData title={noDataText}>
                 {noData && canCreateDatasets && (
-                  <Button variant="link" onClick={handleCreateClick}>
+                  <Button
+                    variant="link"
+                    onClick={() => handleCreateClick("upload")}
+                  >
                     {config.createButtonText}
                   </Button>
                 )}
@@ -520,6 +573,7 @@ const DatasetListPage: React.FunctionComponent<DatasetListPageProps> = ({
       )}
       <CreateDatasetSidebar
         type={type}
+        mode={createMode}
         open={openDialog}
         setOpen={setOpenDialog}
         onDatasetCreated={handleRowClick}
