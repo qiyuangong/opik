@@ -4,6 +4,8 @@ import typing
 
 import httpx
 from .agent_configs.client import AgentConfigsClient, AsyncAgentConfigsClient
+from .agent_insights.client import AgentInsightsClient, AsyncAgentInsightsClient
+from .agent_insights_internal.client import AgentInsightsInternalClient, AsyncAgentInsightsInternalClient
 from .alerts.client import AlertsClient, AsyncAlertsClient
 from .annotation_queues.client import AnnotationQueuesClient, AsyncAnnotationQueuesClient
 from .assertion_results.client import AssertionResultsClient, AsyncAssertionResultsClient
@@ -24,6 +26,7 @@ from .insights_views.client import AsyncInsightsViewsClient, InsightsViewsClient
 from .llm_models.client import AsyncLlmModelsClient, LlmModelsClient
 from .llm_provider_key.client import AsyncLlmProviderKeyClient, LlmProviderKeyClient
 from .manual_evaluation.client import AsyncManualEvaluationClient, ManualEvaluationClient
+from .mcp_o_auth.client import AsyncMcpOAuthClient, McpOAuthClient
 from .ollama.client import AsyncOllamaClient, OllamaClient
 from .ollie_state.client import AsyncOllieStateClient, OllieStateClient
 from .open_telemetry_ingestion.client import AsyncOpenTelemetryIngestionClient, OpenTelemetryIngestionClient
@@ -103,8 +106,11 @@ class OpikApi:
             timeout=_defaulted_timeout,
         )
         self._raw_client = RawOpikApi(client_wrapper=self._client_wrapper)
+        self.mcp_o_auth = McpOAuthClient(client_wrapper=self._client_wrapper)
+        self.agent_insights_internal = AgentInsightsInternalClient(client_wrapper=self._client_wrapper)
         self.system_usage = SystemUsageClient(client_wrapper=self._client_wrapper)
         self.agent_configs = AgentConfigsClient(client_wrapper=self._client_wrapper)
+        self.agent_insights = AgentInsightsClient(client_wrapper=self._client_wrapper)
         self.alerts = AlertsClient(client_wrapper=self._client_wrapper)
         self.annotation_queues = AnnotationQueuesClient(client_wrapper=self._client_wrapper)
         self.assertion_results = AssertionResultsClient(client_wrapper=self._client_wrapper)
@@ -252,8 +258,11 @@ class AsyncOpikApi:
             timeout=_defaulted_timeout,
         )
         self._raw_client = AsyncRawOpikApi(client_wrapper=self._client_wrapper)
+        self.mcp_o_auth = AsyncMcpOAuthClient(client_wrapper=self._client_wrapper)
+        self.agent_insights_internal = AsyncAgentInsightsInternalClient(client_wrapper=self._client_wrapper)
         self.system_usage = AsyncSystemUsageClient(client_wrapper=self._client_wrapper)
         self.agent_configs = AsyncAgentConfigsClient(client_wrapper=self._client_wrapper)
+        self.agent_insights = AsyncAgentInsightsClient(client_wrapper=self._client_wrapper)
         self.alerts = AsyncAlertsClient(client_wrapper=self._client_wrapper)
         self.annotation_queues = AsyncAnnotationQueuesClient(client_wrapper=self._client_wrapper)
         self.assertion_results = AsyncAssertionResultsClient(client_wrapper=self._client_wrapper)

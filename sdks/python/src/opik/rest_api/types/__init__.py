@@ -17,6 +17,12 @@ from .agent_config_value_public import AgentConfigValuePublic
 from .agent_config_value_public_type import AgentConfigValuePublicType
 from .agent_config_value_write import AgentConfigValueWrite
 from .agent_config_value_write_type import AgentConfigValueWriteType
+from .agent_insights_issue import AgentInsightsIssue
+from .agent_insights_issue_detail import AgentInsightsIssueDetail
+from .agent_insights_issue_page import AgentInsightsIssuePage
+from .agent_insights_issue_status import AgentInsightsIssueStatus
+from .agent_insights_issue_with_details import AgentInsightsIssueWithDetails
+from .agent_insights_issue_with_details_status import AgentInsightsIssueWithDetailsStatus
 from .aggregation_data import AggregationData
 from .alert import Alert
 from .alert_alert_type import AlertAlertType
@@ -63,6 +69,7 @@ from .audio_url import AudioUrl
 from .audio_url_public import AudioUrlPublic
 from .audio_url_write import AudioUrlWrite
 from .auth_details_holder import AuthDetailsHolder
+from .authorization_server_metadata import AuthorizationServerMetadata
 from .automation_rule_evaluator import (
     AutomationRuleEvaluator,
     AutomationRuleEvaluator_LlmAsJudge,
@@ -542,6 +549,7 @@ from .provider_api_key_public_provider import ProviderApiKeyPublicProvider
 from .recent_activity_item_public import RecentActivityItemPublic
 from .recent_activity_item_public_type import RecentActivityItemPublicType
 from .recent_activity_page_public import RecentActivityPagePublic
+from .reported_issue import ReportedIssue
 from .response_format import ResponseFormat
 from .response_format_type import ResponseFormatType
 from .result import Result
@@ -698,6 +706,12 @@ __all__ = [
     "AgentConfigValuePublicType",
     "AgentConfigValueWrite",
     "AgentConfigValueWriteType",
+    "AgentInsightsIssue",
+    "AgentInsightsIssueDetail",
+    "AgentInsightsIssuePage",
+    "AgentInsightsIssueStatus",
+    "AgentInsightsIssueWithDetails",
+    "AgentInsightsIssueWithDetailsStatus",
     "AggregationData",
     "Alert",
     "AlertAlertType",
@@ -744,6 +758,7 @@ __all__ = [
     "AudioUrlPublic",
     "AudioUrlWrite",
     "AuthDetailsHolder",
+    "AuthorizationServerMetadata",
     "AutomationRuleEvaluator",
     "AutomationRuleEvaluatorAction",
     "AutomationRuleEvaluatorLlmAsJudge",
@@ -1178,6 +1193,7 @@ __all__ = [
     "RecentActivityItemPublic",
     "RecentActivityItemPublicType",
     "RecentActivityPagePublic",
+    "ReportedIssue",
     "ResponseFormat",
     "ResponseFormatType",
     "Result",
